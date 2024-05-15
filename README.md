@@ -1,3 +1,8 @@
+WHAT IS THIS?
+
+
+this plugin allow your game can load all mods that you subcribed at workshop without 50mods limitation.
+
 HOW TO USE
 
 
