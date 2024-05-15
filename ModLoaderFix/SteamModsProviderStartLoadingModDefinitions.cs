@@ -1,7 +1,10 @@
 using System.Collections.Generic;
+using System.Linq;
 using Game.Services;
 using Game.Services.Filesystem;
+using Game.UI.Popups;
 using HarmonyLib;
+using Steamworks;
 
 namespace ModLoaderFix
 {
@@ -17,23 +20,24 @@ namespace ModLoaderFix
             ModLoaderFixPlugin.LogInfo("SteamModsProvider.StartLoadingModDefinitions");
             var modService = Game.Game.serv.mods;
              modDictionary = Traverse.Create(modService).Field<Dictionary<string, ModDefinition>>("_mods").Value;
-            var traverse = Traverse.Create(__instance);
+             var traverse = Traverse.Create(__instance);
              rootpaths = traverse.Field<Dictionary<string, string>>("rootpaths").Value;
              moddefs = traverse.Field<List<ModDefinition>>("moddefs").Value;
              var player = ModLoaderFixPlugin.ServiceContext.saveload.player;
             var prefs = player.prefs;
             var values = new List<WorkshopModInfo>(ModLoaderFixPlugin.WorkshopModInfos.Values);
-            for (var i = 0; i < ModLoaderFixPlugin.WorkshopModInfos.Count; i++)
+            var count = ModLoaderFixPlugin.WorkshopModInfos.Count;
+            for (var i = 0; i < count; i++)
             {
                 var info = values[i];
-                var modDefinition =  info.ParseModInfo();
-                var id = modDefinition.modid.id;
+                var id = info.ModDefinition.modid.id;
+                var isNew = !prefs.enabledmods.ContainsKey(id);
+                var modDefinition =  info.ParseModInfo(isNew);
                 moddefs.Add(modDefinition);
-                if (!prefs.enabledmods.ContainsKey(id))
+                if (isNew)
                 {
-                    
                 prefs.enabledmods[id] = true;
-                ModLoaderFixPlugin.LogInfo($"[Active] mod {id}  name: {modDefinition.name} description: {modDefinition.description}");
+                ModLoaderFixPlugin.LogInfo($"[NewModActive] mod: {id}  name: {modDefinition.name}");
                 }
                 if (modDictionary.ContainsKey(id))
                 {
@@ -42,10 +46,10 @@ namespace ModLoaderFix
                 modDictionary[id] = modDefinition;
                 rootpaths[id] = info.RootPath;
             }
-
             player.SavePrefs();
             
             return false;
         }
+       
     }
 }

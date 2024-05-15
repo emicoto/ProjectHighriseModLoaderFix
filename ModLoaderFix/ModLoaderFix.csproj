@@ -10,7 +10,7 @@
         <AppDesignerFolder>Properties</AppDesignerFolder>
         <RootNamespace>ModLoaderFix</RootNamespace>
         <AssemblyName>ModLoaderFix</AssemblyName>
-        <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+        <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
         <FileAlignment>512</FileAlignment>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -49,12 +49,16 @@
           <HintPath>..\..\..\BepInEx\core\BepInEx.dll</HintPath>
           <Private>False</Private>
         </Reference>
-        <Reference Include="GalaxyCSharp">
-          <HintPath>..\..\..\Game_Data\Managed\GalaxyCSharp.dll</HintPath>
-          <Private>False</Private>
-        </Reference>
         <Reference Include="Logger">
           <HintPath>..\..\..\Game_Data\Managed\Logger.dll</HintPath>
+          <Private>False</Private>
+        </Reference>
+        <Reference Include="Mono.Security">
+          <HintPath>..\..\..\Game_Data\Managed\Mono.Security.dll</HintPath>
+          <Private>False</Private>
+        </Reference>
+        <Reference Include="mscorlib">
+          <HintPath>..\..\..\Game_Data\Managed\mscorlib.dll</HintPath>
           <Private>False</Private>
         </Reference>
         <Reference Include="System"/>
@@ -80,8 +84,10 @@
     </ItemGroup>
     <ItemGroup>
         <Compile Include="AchievementsServiceOnSessionChange.cs" />
+        <Compile Include="EntityManagerLoad.cs" />
         <Compile Include="ModInfo.cs" />
         <Compile Include="ModLoaderFixPlugin.cs" />
+        <Compile Include="PlaceModPopupRefresh.cs" />
         <Compile Include="Properties\AssemblyInfo.cs"/>
         <Compile Include="SteamModsProviderStartLoadingModDefinitions.cs" />
         <Compile Include="WorkshopModInfo.cs" />

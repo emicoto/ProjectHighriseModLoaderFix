@@ -6,6 +6,7 @@ using BepInEx.Configuration;
 using Game.Services;
 using Game.Services.Filesystem;
 using Game;
+using Game.Session.Entities;
 using HarmonyLib;
 using Steamworks;
 using UnityEngine;
@@ -45,24 +46,10 @@ namespace ModLoaderFix
             ReloadModsKey = Config.Bind("General", "ReloadModsKey", KeyCode.F8);
         }
 
-        private void Update()
-        {
-            if (!IsMainMenu)
-            {
-                return;
-            }
-
-            if (Input.GetKeyDown(ReloadModsKey.Value))
-            {
-                LogInfo("Reloading mods");
-                ServiceContext.mods.Release();
-                ServiceContext.mods.Initialize();
-                LogInfo("Mods reloaded");
-            }
-        }
+       
 
         public static ServiceContext ServiceContext => Game.Game.serv;
-        FileSystemWatcher watcher;
+        //FileSystemWatcher watcher;
         public static bool IsMainMenu => ServiceContext.scenarios.sessionType == ScenarioService.Type.Unknown;
  //       public void FileWatcherWorkshopDirectory()
 //       {

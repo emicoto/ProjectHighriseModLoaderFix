@@ -1,5 +1,8 @@
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Game.Services;
+using Game.UI.Popups;
 using Steamworks;
 using UnityEngine;
 
@@ -7,6 +10,7 @@ namespace ModLoaderFix
 {
     public class WorkshopModInfo
     {
+        public static List<ModDefinition> NewMods = new List<ModDefinition>();
         public WorkshopModInfo(string rootPath)
         {
             RootPath = rootPath;
@@ -23,12 +27,16 @@ namespace ModLoaderFix
        
         }
 
-        private ModDefinition ModDefinition;
-        public ModDefinition ParseModInfo()
+        public ModDefinition ModDefinition;
+        public ModDefinition ParseModInfo(bool isNew = false)
         {
             if (ModInfo != null)
             {
                 return ModDefinition;
+            }
+            if (isNew)
+            {
+                NewMods.Add(ModDefinition);
             }
             var modInfoPath = Path.Combine(RootPath, "modinfo.json");
             if (File.Exists(modInfoPath))
@@ -52,12 +60,31 @@ namespace ModLoaderFix
                 ModLoaderFixPlugin.LogInfo($"json: {json}");
                 ModLoaderFixPlugin.LogInfo($"Writing modinfo.json to {modInfoPath}");
                 File.WriteAllText(modInfoPath, json);
-                
+               
+              
+
             });
-            CallResult<SteamUGCRequestUGCDetailsResult_t>.Create(func).Set(SteamUGC.RequestUGCDetails(Id, uint.MaxValue), func);
+            
+                    CallResult<SteamUGCRequestUGCDetailsResult_t>.Create(func).Set(SteamUGC.RequestUGCDetails(Id, uint.MaxValue), func);
             return ModDefinition;
         }
-
+        public static void ShowNewMods()
+        {
+            if (NewMods.Count == 0)
+            {
+                return;
+            }
+            var modText = GetModList(NewMods);
+            var resultText = modText.Length > 200 ? modText.Substring(0, 200) + "..." : modText;
+            
+            OkPopup.Show($"Total Mods: {NewMods.Count} New Mods: {NewMods.Count} List:\n{resultText}",null);
+        }
+        public static string GetModList(List<ModDefinition> moddefs)
+        {
+            var modList = moddefs.Select(mod => $"{mod.name}({mod.modid.id})").ToArray();
+            
+            return string.Join(",",modList );
+        }
         public ModInfo ModInfo { get; set; } = null;
         public bool IsWorkshopMod;
         public string RootPath { get; set; }
